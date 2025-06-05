@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/users
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+springdoc:
+  swagger-ui:
+    path: /api/docs
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+#server:
+#  servlet:
+#    context-path: /api
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.fasterxml.jackson: DEBUG
+    org.springframework.http: DEBUG
+    com.fasterxml.jackson.databind: TRACE
