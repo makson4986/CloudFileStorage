@@ -8,16 +8,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -54,13 +55,15 @@ public class AuthController {
     )
     @PostMapping("/auth/sign-up")
     public ResponseEntity<?> signUp(@RequestBody @Validated UserDto userDto,
-                                    BindingResult bindingResult) {
+                                    BindingResult bindingResult,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(createErrorDto(bindingResult));
         }
 
-        var response = authService.signUp(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        AuthResponseDto authResponse = authService.signUp(userDto, request, response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 
 
@@ -91,13 +94,21 @@ public class AuthController {
             }
     )
     @PostMapping("/auth/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody @Validated UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<?> signIn(@RequestBody @Validated UserDto userDto,
+                                    BindingResult bindingResult,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(createErrorDto(bindingResult));
         }
 
-        AuthResponseDto response = authService.signIn(userDto);
-        return ResponseEntity.ok(response);
+        AuthResponseDto authResponse = authService.signIn(userDto, request, response);
+        return ResponseEntity.ok(authResponse);
+    }
+
+    @GetMapping("/test")
+    public void a(@AuthenticationPrincipal UserDetails user) {
+
     }
 
     private ErrorDto createErrorDto(BindingResult bindingResult) {
