@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
@@ -31,12 +33,14 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/api/auth/sign-up",
                         "/api/auth/sign-in",
+                        "/api/auth/sign-out",
                         "/api/docs",
                         "/api/swagger-ui/**",
                         "/v3/**"
                 ).permitAll()
                 .anyRequest().authenticated());
         http.formLogin(AbstractHttpConfigurer::disable);
+        http.logout(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
@@ -78,5 +82,15 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public CookieClearingLogoutHandler cookieClearingLogoutHandler() {
+        return new CookieClearingLogoutHandler("JSESSIONID");
+    }
+
+    @Bean
+    public SecurityContextLogoutHandler securityContextLogoutHandler() {
+        return new SecurityContextLogoutHandler();
     }
 }

@@ -8,16 +8,11 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
   jackson:
     property-naming-strategy: SNAKE_CASE
+  session:
+    timeout: 1800
 springdoc:
   swagger-ui:
     path: /api/docs
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6379
-#server:
-#  servlet:
-#    context-path: /api
 logging:
   level:
     org.springframework.web: DEBUG

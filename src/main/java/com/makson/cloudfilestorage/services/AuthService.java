@@ -4,6 +4,7 @@ import com.makson.cloudfilestorage.dto.AuthResponseDto;
 import com.makson.cloudfilestorage.dto.UserDto;
 import com.makson.cloudfilestorage.exceptions.DataBaseException;
 import com.makson.cloudfilestorage.exceptions.UserAlreadyExistException;
+import com.makson.cloudfilestorage.exceptions.UserNotAuthorizedException;
 import com.makson.cloudfilestorage.models.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +27,10 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
     private final SecurityContextRepository contextRepository;
+    private final CookieClearingLogoutHandler cookieClearingLogoutHandler;
+    private final SecurityContextLogoutHandler securityContextLogoutHandler;
+    private final UserService userService;
 
     public AuthResponseDto signUp(UserDto userDto, HttpServletRequest request, HttpServletResponse response) {
         User user = User.builder()
@@ -58,5 +63,14 @@ public class AuthService {
 
         UserDetails user = (UserDetails) authenticate.getPrincipal();
         return new AuthResponseDto(user.getUsername());
+    }
+
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        if (authentication == null) {
+            throw new UserNotAuthorizedException("User not authorized");
+        }
+
+        cookieClearingLogoutHandler.logout(request, response, authentication);
+        securityContextLogoutHandler.logout(request, response, authentication);
     }
 }
