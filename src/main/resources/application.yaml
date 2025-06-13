@@ -9,7 +9,7 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
   session:
-    timeout: 1800
+    timeout: 1h
 springdoc:
   swagger-ui:
     path: /api/docs
