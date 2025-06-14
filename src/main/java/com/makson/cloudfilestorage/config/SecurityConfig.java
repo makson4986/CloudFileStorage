@@ -1,6 +1,5 @@
 package com.makson.cloudfilestorage.config;
 
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +35,8 @@ public class SecurityConfig {
                         "/api/auth/sign-out",
                         "/api/docs",
                         "/api/swagger-ui/**",
-                        "/v3/**"
+                        "/v3/**",
+                        "/documentation.yaml"
                 ).permitAll()
                 .anyRequest().authenticated());
         http.formLogin(AbstractHttpConfigurer::disable);

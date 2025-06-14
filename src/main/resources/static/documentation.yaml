@@ -1,0 +1,132 @@
+openapi: 3.1.0
+info:
+  title: Swagger CloudFileStorage - OpenAPI 3.0
+  description: |-
+    Multi-user file cloud. Users of the service can use it to upload and store files. 
+    The source of inspiration for the project is Google Drive.
+  version: 1.0.12
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: user
+    description: Operations about user
+paths:
+  /api/auth/sign-up:
+    post:
+      tags:
+        - user
+      summary: User registration
+      description: Allows you to register a user
+      operationId: userRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+               $ref: '#/components/schemas/User'
+      responses:
+        "201": 
+          description: User registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        "400": 
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "409": 
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500": 
+          description: Unknown error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/sign-in:
+    post:
+      tags:
+        - user
+      summary: Login
+      description: Allows you to login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+               $ref: '#/components/schemas/User'
+      responses:
+        "201": 
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        "400": 
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401": 
+          description: Incorrect data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500": 
+          description: Unknown error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/auth/sign-out:
+    post:
+      tags:
+        - user
+      summary: Logout
+      description: Allows users to log out of the system
+      operationId: logout
+      responses:
+        "204": 
+          description: Successful logout
+        "401": 
+          description: The request is executed by an unauthorized user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500": 
+          description: Unknown error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 5
+          maxLength: 20
+        password:
+          type: string
+          minLength: 5
+          maxLength: 20
+    AuthResponse:
+      type: object
+      properties:
+        username:
+          type: string
