@@ -10,6 +10,11 @@ spring:
     property-naming-strategy: SNAKE_CASE
   session:
     timeout: 1h
+  minio:
+    url: http://localhost:9000
+    bucket: user-files
+    access-key: makson4986
+    secret-key: trolik12
 springdoc:
   swagger-ui:
     path: /api/docs
