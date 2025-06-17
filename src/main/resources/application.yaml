@@ -1,8 +1,8 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     url: jdbc:postgresql://localhost:5433/users
-    username: postgres
-    password: postgres
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
@@ -10,20 +10,9 @@ spring:
     property-naming-strategy: SNAKE_CASE
   session:
     timeout: 1h
-  minio:
-    url: http://localhost:9000
-    bucket: user-files
-    access-key: makson4986
-    secret-key: trolik12
 springdoc:
   swagger-ui:
     path: /api/docs
     url: /documentation.yaml
   api-docs:
     enabled: true
-logging:
-  level:
-    org.springframework.web: DEBUG
-    com.fasterxml.jackson: DEBUG
-    org.springframework.http: DEBUG
-    com.fasterxml.jackson.databind: TRACE

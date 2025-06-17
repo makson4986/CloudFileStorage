@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/auth/sign-up")
+    @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody @Validated UserDto userDto,
                                     BindingResult bindingResult,
                                     HttpServletRequest request,
@@ -36,7 +36,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 
-    @PostMapping("/auth/sign-in")
+    @PostMapping("/sign-in")
     public ResponseEntity<?> signIn(@RequestBody @Validated UserDto userDto,
                                     BindingResult bindingResult,
                                     HttpServletRequest request,
@@ -49,7 +49,7 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
-    @PostMapping("/auth/sign-out")
+    @PostMapping("/sign-out")
     public ResponseEntity<?> logout(HttpServletRequest request,
                                     HttpServletResponse response,
                                     Authentication authentication) {
