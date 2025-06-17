@@ -1,8 +1,8 @@
 package com.makson.cloudfilestorage.controllers;
 
-import com.makson.cloudfilestorage.dto.AuthResponseDto;
+import com.makson.cloudfilestorage.dto.UserResponseDto;
 import com.makson.cloudfilestorage.dto.ErrorDto;
-import com.makson.cloudfilestorage.dto.UserDto;
+import com.makson.cloudfilestorage.dto.UserRequestDto;
 import com.makson.cloudfilestorage.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,7 +24,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody @Validated UserDto userDto,
+    public ResponseEntity<?> signUp(@RequestBody @Validated UserRequestDto user,
                                     BindingResult bindingResult,
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
@@ -32,12 +32,12 @@ public class AuthController {
             return ResponseEntity.badRequest().body(createErrorDto(bindingResult));
         }
 
-        AuthResponseDto authResponse = authService.signUp(userDto, request, response);
+        UserResponseDto authResponse = authService.signUp(user, request, response);
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody @Validated UserDto userDto,
+    public ResponseEntity<?> signIn(@RequestBody @Validated UserRequestDto user,
                                     BindingResult bindingResult,
                                     HttpServletRequest request,
                                     HttpServletResponse response) {
@@ -45,7 +45,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(createErrorDto(bindingResult));
         }
 
-        AuthResponseDto authResponse = authService.signIn(userDto, request, response);
+        UserResponseDto authResponse = authService.signIn(user, request, response);
         return ResponseEntity.ok(authResponse);
     }
 
