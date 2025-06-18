@@ -1,8 +1,8 @@
 package com.makson.cloudfilestorage.controllers;
 
-import com.makson.cloudfilestorage.dto.UserResponseDto;
 import com.makson.cloudfilestorage.dto.ErrorDto;
 import com.makson.cloudfilestorage.dto.UserRequestDto;
+import com.makson.cloudfilestorage.dto.UserResponseDto;
 import com.makson.cloudfilestorage.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

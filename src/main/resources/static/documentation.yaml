@@ -8,13 +8,13 @@ info:
 servers:
   - url: http://localhost:8080
 tags:
-  - name: user
+  - name: User
     description: Operations about user
 paths:
   /api/auth/sign-up:
     post:
       tags:
-        - user
+        - User
       summary: User registration
       description: Allows you to register a user
       operationId: userRegistration
@@ -22,27 +22,27 @@ paths:
         content:
           application/json:
             schema:
-               $ref: '#/components/schemas/User'
+               $ref: '#/components/schemas/UserRequest'
       responses:
         "201": 
           description: User registration successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        "400": 
+                $ref: '#/components/schemas/UserResponse'
+        "400":
           description: Validation error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        "409": 
+        "409":
           description: User already exists
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        "500": 
+        "500":
           description: Unknown error
           content:
             application/json:
@@ -51,7 +51,7 @@ paths:
   /api/auth/sign-in:
     post:
       tags:
-        - user
+        - User
       summary: Login
       description: Allows you to login
       operationId: login
@@ -59,27 +59,27 @@ paths:
         content:
           application/json:
             schema:
-               $ref: '#/components/schemas/User'
+               $ref: '#/components/schemas/UserRequest'
       responses:
-        "201": 
+        "201":
           description: Successful login
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        "400": 
+                $ref: '#/components/schemas/UserResponse'
+        "400":
           description: Validation error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        "401": 
+        "401":
           description: Incorrect data
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        "500": 
+        "500":
           description: Unknown error
           content:
             application/json:
@@ -88,20 +88,46 @@ paths:
   /api/auth/sign-out:
     post:
       tags:
-        - user
+        - User
       summary: Logout
       description: Allows users to log out of the system
       operationId: logout
       responses:
-        "204": 
+        "204":
           description: Successful logout
-        "401": 
+        "401":
           description: The request is executed by an unauthorized user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        "500": 
+        "500":
+          description: Unknown error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/user/me:
+    get:
+      tags:
+        - User
+      summary: Current user
+      description: Returns the currently logged in user
+      operationId: currentUser
+      responses:
+        "200":
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "401":
+          description: User is not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
           description: Unknown error
           content:
             application/json:
@@ -114,7 +140,7 @@ components:
       properties:
         message:
           type: string
-    User:
+    UserRequest:
       type: object
       properties:
         username:
@@ -125,7 +151,7 @@ components:
           type: string
           minLength: 5
           maxLength: 20
-    AuthResponse:
+    UserResponse:
       type: object
       properties:
         username:
