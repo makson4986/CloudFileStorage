@@ -1,7 +1,12 @@
 package com.makson.cloudfilestorage.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.makson.cloudfilestorage.dto.ErrorDto;
+import com.sun.net.httpserver.HttpsParameters;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -25,20 +30,35 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                .requestMatchers(
-                        "/api/auth/sign-up",
-                        "/api/auth/sign-in",
-                        "/api/auth/sign-out",
-                        "/api/docs",
-                        "/api/swagger-ui/**",
-                        "/v3/**",
-                        "/documentation.yaml"
-                ).permitAll()
-                .anyRequest().authenticated());
+                        .requestMatchers(
+                                "/api/auth/sign-up",
+                                "/api/auth/sign-in",
+                                "/api/auth/sign-out",
+                                "/api/docs",
+                                "/api/swagger-ui/**",
+                                "/v3/**",
+                                "/documentation.yaml"
+                        ).permitAll());
+
+        http
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(
+                                "/api/user/me"
+                        ).authenticated())
+                .exceptionHandling(exception -> {
+                    exception.authenticationEntryPoint((request, response, authException) -> {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        ErrorDto error = new ErrorDto("User is not authorized!");
+                        new ObjectMapper().writeValue(response.getWriter(), error);
+                    });
+                });
+
+
         http.formLogin(AbstractHttpConfigurer::disable);
         http.logout(AbstractHttpConfigurer::disable);
         return http.build();
