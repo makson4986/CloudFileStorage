@@ -16,3 +16,5 @@ springdoc:
     url: /documentation.yaml
   api-docs:
     enabled: true
+minio:
+  bucket-name: user-files

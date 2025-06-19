@@ -57,7 +57,7 @@ public class SecurityConfig {
                         new ObjectMapper().writeValue(response.getWriter(), error);
                     });
                 });
-
+        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
 
         http.formLogin(AbstractHttpConfigurer::disable);
         http.logout(AbstractHttpConfigurer::disable);
