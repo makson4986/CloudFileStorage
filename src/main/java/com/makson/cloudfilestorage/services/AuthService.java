@@ -66,10 +66,6 @@ public class AuthService {
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        if (authentication == null) {
-            throw new UserNotAuthorizedException("User not authorized");
-        }
-
         cookieClearingLogoutHandler.logout(request, response, authentication);
         securityContextLogoutHandler.logout(request, response, authentication);
     }

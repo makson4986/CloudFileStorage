@@ -37,18 +37,12 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/sign-up",
                                 "/api/auth/sign-in",
-                                "/api/auth/sign-out",
                                 "/api/docs",
                                 "/api/swagger-ui/**",
                                 "/v3/**",
                                 "/documentation.yaml"
-                        ).permitAll());
-
-        http
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(
-                                "/api/user/me"
-                        ).authenticated())
+                        ).permitAll()
+                        .anyRequest().authenticated())
                 .exceptionHandling(exception -> {
                     exception.authenticationEntryPoint((request, response, authException) -> {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -57,7 +51,6 @@ public class SecurityConfig {
                         new ObjectMapper().writeValue(response.getWriter(), error);
                     });
                 });
-        http.authorizeHttpRequests(request -> request.anyRequest().authenticated());
 
         http.formLogin(AbstractHttpConfigurer::disable);
         http.logout(AbstractHttpConfigurer::disable);
