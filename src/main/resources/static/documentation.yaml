@@ -101,6 +101,8 @@ paths:
     get:
       tags:
         - User
+      security:
+        - cookieAuth: []
       summary: Current user
       description: Returns the currently logged in user
       operationId: currentUser
@@ -119,6 +121,8 @@ paths:
     get:
       tags:
         - Resources
+      security:
+        - cookieAuth: []
       summary: Resource info
       description: Getting information about a resource
       operationId: resourceInfo
@@ -184,7 +188,6 @@ components:
           enum:
             - FILE
             - DIRECTORY
-
   responses:
     UnauthorizedError:
       description: User is not authorized
@@ -198,4 +201,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
 
