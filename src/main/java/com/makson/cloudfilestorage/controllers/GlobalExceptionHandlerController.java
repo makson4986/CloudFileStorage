@@ -1,6 +1,7 @@
 package com.makson.cloudfilestorage.controllers;
 
 import com.makson.cloudfilestorage.dto.ErrorDto;
+import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.exceptions.UserAlreadyExistException;
 import com.makson.cloudfilestorage.exceptions.UserNotAuthorizedException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,12 @@ public class GlobalExceptionHandlerController {
     public ResponseEntity<?> handleAuthenticationException(Exception ex) {
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleGetInfoResourceException(Exception ex) {
+        log.warn(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
