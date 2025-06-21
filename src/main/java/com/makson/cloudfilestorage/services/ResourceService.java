@@ -1,22 +1,19 @@
 package com.makson.cloudfilestorage.services;
 
 import com.makson.cloudfilestorage.dto.Resource;
-import com.makson.cloudfilestorage.dto.ResourceDto;
+import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.models.User;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,7 @@ public class ResourceService {
     private final MinioClient minioClient;
     private final UserService userService;
 
-    public ResourceDto getInfo(String path, UserDetails userDetails) throws IOException, GeneralSecurityException, MinioException {
+    public ResourceResponseDto getInfo(String path, UserDetails userDetails) throws IOException, GeneralSecurityException, MinioException {
         String fullPath = getFullPath(userDetails, path);
         String resourceName = getResourceNameByPath(fullPath);
         boolean isFolder = isFolder(path);
@@ -47,7 +44,7 @@ public class ResourceService {
             throw new ResourceNotFoundException("Resource not found");
         }
 
-        return new ResourceDto(
+        return new ResourceResponseDto(
                 getPathToResource(fullPath, resourceName),
                 resourceName,
                 isFolder ? null : size,
