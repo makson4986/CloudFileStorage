@@ -24,44 +24,20 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody @Validated UserRequestDto user,
-                                    BindingResult bindingResult,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(createErrorDto(bindingResult));
-        }
-
+    public ResponseEntity<?> signUp(@RequestBody @Validated UserRequestDto user, HttpServletRequest request, HttpServletResponse response) {
         UserResponseDto authResponse = authService.signUp(user, request, response);
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody @Validated UserRequestDto user,
-                                    BindingResult bindingResult,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(createErrorDto(bindingResult));
-        }
-
+    public ResponseEntity<?> signIn(@RequestBody @Validated UserRequestDto user, HttpServletRequest request, HttpServletResponse response) {
         UserResponseDto authResponse = authService.signIn(user, request, response);
         return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/sign-out")
-    public ResponseEntity<?> logout(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    Authentication authentication) {
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response,  Authentication authentication) {
         authService.logout(request, response, authentication);
         return ResponseEntity.noContent().build();
-    }
-
-    private ErrorDto createErrorDto(BindingResult bindingResult) {
-        return new ErrorDto(bindingResult.getFieldErrors().stream()
-                .map(er -> er.getField() + ": " + er.getDefaultMessage())
-                .toList()
-                .getFirst()
-        );
     }
 }

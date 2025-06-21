@@ -3,11 +3,11 @@ package com.makson.cloudfilestorage.controllers;
 import com.makson.cloudfilestorage.dto.ErrorDto;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.exceptions.UserAlreadyExistException;
-import com.makson.cloudfilestorage.exceptions.UserNotAuthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,7 +20,7 @@ public class GlobalExceptionHandlerController {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDto(ex.getMessage()));
     }
 
-    @ExceptionHandler({BadCredentialsException.class, UserNotAuthorizedException.class})
+    @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleAuthenticationException(Exception ex) {
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDto(ex.getMessage()));
@@ -30,6 +30,18 @@ public class GlobalExceptionHandlerController {
     public ResponseEntity<?> handleGetInfoResourceException(Exception ex) {
         log.warn(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationException(Exception ex) {
+        log.warn(ex.getMessage());
+        ErrorDto errorDto = new ErrorDto(
+                ((MethodArgumentNotValidException) ex).getFieldErrors().stream()
+                        .map(er -> er.getField() + ": " + er.getDefaultMessage())
+                        .toList()
+                        .getFirst()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDto);
     }
 
     @ExceptionHandler(Exception.class)
