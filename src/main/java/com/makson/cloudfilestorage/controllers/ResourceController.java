@@ -5,6 +5,7 @@ import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.services.ResourceService;
 import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +33,6 @@ public class ResourceController {
     @DeleteMapping()
     public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails user) throws GeneralSecurityException, MinioException, IOException {
         resourceService.delete(resourceRequestDto.path(), user);
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.noContent().build();
     }
 }

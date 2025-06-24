@@ -111,6 +111,10 @@ public class ResourceService {
     private void deleteDirectory(String path) throws IOException, GeneralSecurityException, MinioException {
         List<DeleteObject> resources = new ArrayList<>();
 
+        if (!isDirectoryExists(path)) {
+            throw new ResourceNotFoundException("Resource not found");
+        }
+
         for (Result<Item> resource : getListResources(path)) {
             resources.add(new DeleteObject(resource.get().objectName()));
         }

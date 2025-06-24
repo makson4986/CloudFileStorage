@@ -138,6 +138,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Resource'
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Resources
+      security:
+        - cookieAuth: [ ]
+      summary: Deleting a resource
+      description: Removes the specified resource
+      operationId: deleteResource
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the resource
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successful resource deletion
+        "400":
+          $ref: '#/components/responses/InvalidPath'
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
@@ -195,6 +227,12 @@ components:
             $ref: '#/components/schemas/Error'
     InternalServerError:
       description: Unknown error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InvalidPath:
+      description: Invalid or missing path
       content:
         application/json:
           schema:
