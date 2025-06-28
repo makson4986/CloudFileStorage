@@ -13,8 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,9 +68,41 @@ public class ResourceService {
         }
     }
 
+    public OutputStream download(String path, UserDetails userDetails) throws IOException, GeneralSecurityException, MinioException {
+        String fullPath = getFullPath(userDetails, path);
+        boolean isDirectory = isDirectory(fullPath);
+
+        if (isDirectory) {
+            downloadDirectory(fullPath);
+        } else {
+            downloadFile(fullPath);
+        }
+        return null;
+    }
+
+    public List<ResourceResponseDto> upload(String pathToParentDirectory, UserDetails userDetails, List<MultipartFile> files) throws IOException, GeneralSecurityException, MinioException {
+        for (MultipartFile file : files) {
+            String fullPath = getFullPath(pathToParentDirectory, file.getOriginalFilename(), userDetails);
+
+            minioClient.putObject(PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fullPath)
+                            .contentType(file.getContentType())
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                    .build());
+        }
+
+        return null;
+    }
+
     private String getFullPath(UserDetails userDetails, String path) {
         User user = (User) userService.loadUserByUsername(userDetails.getUsername());
         return String.format("user-%d-files/%s", user.getId(), path);
+    }
+
+    private String getFullPath(String pathToParentDirectory, String resourceName, UserDetails userDetails) {
+        User user = (User) userService.loadUserByUsername(userDetails.getUsername());
+        return String.format("user-%d-files/%s%s", user.getId(), pathToParentDirectory, resourceName);
     }
 
     private String getPathToParentDirectory(String fullPath, String resourceName) {
@@ -127,5 +160,29 @@ public class ResourceService {
         for (Result<DeleteError> result : results) {
             result.get();
         }
+    }
+
+    private OutputStream downloadFile(String path) throws IOException, GeneralSecurityException, MinioException {
+        try (InputStream stream = minioClient.getObject(GetObjectArgs.builder()
+                .bucket(bucketName)
+                .object(path)
+                .build())) {
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = stream.read(data)) != -1) {
+                buffer.write(data, 0, bytesRead);
+            }
+
+            return buffer;
+        }  catch (ErrorResponseException e) {
+            throw new ResourceNotFoundException("Resource not found");
+        }
+    }
+
+    private void downloadDirectory(String path) throws IOException, GeneralSecurityException, MinioException {
+
     }
 }
