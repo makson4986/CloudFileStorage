@@ -18,3 +18,4 @@ springdoc:
     enabled: true
 minio:
   bucket-name: user-files
+  user-root-directory: user-%d-files

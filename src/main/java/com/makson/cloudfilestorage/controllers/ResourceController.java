@@ -2,6 +2,7 @@ package com.makson.cloudfilestorage.controllers;
 
 import com.makson.cloudfilestorage.dto.ResourceRequestDto;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
+import com.makson.cloudfilestorage.models.User;
 import com.makson.cloudfilestorage.services.ResourceService;
 import io.minio.errors.MinioException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,19 +26,21 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @GetMapping()
-    public ResponseEntity<?> getInfo(
-            @Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails user) throws GeneralSecurityException, MinioException, IOException {
-        ResourceResponseDto resourceInfo = resourceService.getInfo(resourceRequestDto.path(), user);
+    public ResponseEntity<?> getInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = (User) userDetails;
+        ResourceResponseDto resourceInfo = resourceService.getInfo(resourceRequestDto.path(), user.getId());
         return ResponseEntity.ok(resourceInfo);
     }
 
     @DeleteMapping()
-    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails user) throws GeneralSecurityException, MinioException, IOException {
-        resourceService.delete(resourceRequestDto.path(), user);
+    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = (User) userDetails;
+        resourceService.delete(resourceRequestDto.path(), user.getId());
         return ResponseEntity.noContent().build();
     }
 
-    public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails user) throws GeneralSecurityException, MinioException, IOException {
+    public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
+        User user = (User) userDetails;
         return ResponseEntity.ok("ok");
     }
 
@@ -45,8 +48,9 @@ public class ResourceController {
     public ResponseEntity<?> upload(
             @RequestPart("object") List<MultipartFile> files,
             @Validated ResourceRequestDto resourceRequestDto,
-            @AuthenticationPrincipal UserDetails user) throws GeneralSecurityException, MinioException, IOException {
-        resourceService.upload(resourceRequestDto.path(), user, files);
-        return ResponseEntity.status(HttpStatus.CREATED).body("ok");
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = (User) userDetails;
+        List<ResourceResponseDto> result = resourceService.upload(resourceRequestDto.path(), files, user.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }
