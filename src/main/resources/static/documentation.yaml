@@ -180,6 +180,46 @@ paths:
                 $ref: '#/components/schemas/Error'
         "500":
           $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Resources
+      security:
+        - cookieAuth: [ ]
+      summary: Uploading resources
+      description: Allows you to upload files and folders
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the resource
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResourceRequestBody'
+          
+      responses:
+        "201":
+          description: The resource has been loaded successfully
+        "400":
+          description: Invalid or missing files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "409":
+          description: The file already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
@@ -218,6 +258,16 @@ components:
           enum:
             - FILE
             - DIRECTORY
+    ResourceRequestBody:
+      type: object
+      properties:
+        object:
+          type: array
+          items:
+            type: string
+            format: binary
+      required:
+        - object
   responses:
     UnauthorizedError:
       description: User is not authorized
