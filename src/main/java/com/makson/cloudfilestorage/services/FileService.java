@@ -5,6 +5,7 @@ import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.exceptions.ResourceAlreadyExistException;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.repositories.MinioRepository;
+import com.makson.cloudfilestorage.utils.PathUtil;
 import io.minio.StatObjectResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class FileService {
 
         if (fileInfo.isPresent()) {
             return new ResourceResponseDto(
-                    path,
-                    getFileName(path),
+                    PathUtil.getParent(path),
+                    PathUtil.getName(path),
                     fileInfo.get().size(),
                     Resource.FILE
             );
@@ -43,7 +44,7 @@ public class FileService {
     }
 
     public ResourceResponseDto upload(String pathTo, MultipartFile file, int userId) {
-        String path = pathTo + "/" + file.getOriginalFilename();
+        String path = pathTo + file.getOriginalFilename();
 
         if (isFileExists(path, userId)) {
             throw new ResourceAlreadyExistException("File '%s' already exists".formatted(file.getOriginalFilename()));
@@ -56,10 +57,5 @@ public class FileService {
     public boolean isFileExists(String path, int userId) {
         Optional<StatObjectResponse> fileInfo = minioRepository.getFileInfo(path, userId);
         return fileInfo.isPresent();
-    }
-
-    private String getFileName(String path) {
-        var part = path.split("/");
-        return part[part.length - 1];
     }
 }

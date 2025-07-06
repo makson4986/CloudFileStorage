@@ -4,8 +4,10 @@ import com.makson.cloudfilestorage.dto.Resource;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.repositories.MinioRepository;
+import com.makson.cloudfilestorage.utils.PathUtil;
 import io.minio.Result;
 import io.minio.messages.Item;
+import io.swagger.v3.core.util.PathUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,8 @@ public class DirectoryService {
     public ResourceResponseDto getInfo(String path, int userId) {
         if (isDirectoryExists(path, userId)) {
             return new ResourceResponseDto(
-                    path,
-                    getDirectoryName(path),
+                    PathUtil.getParent(path),
+                    PathUtil.getName(path),
                     DIRECTORY_SIZE,
                     Resource.DIRECTORY
             );
@@ -45,10 +47,5 @@ public class DirectoryService {
     private boolean isDirectoryExists(String path, int userId) {
         Iterable<Result<Item>> resources = minioRepository.getFilesInDirectory(path, userId, false);
         return resources.iterator().hasNext();
-    }
-
-    private String getDirectoryName(String path) {
-        var part = path.split("/");
-        return part[part.length - 1];
     }
 }
