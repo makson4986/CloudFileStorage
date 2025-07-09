@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +16,12 @@ public class ResourceService {
     private final DirectoryService directoryService;
 
     public ResourceResponseDto getInfo(String path, int userId) {
-        boolean isFolder = directoryService.isDirectory(path);
+        boolean isDirectory = directoryService.isDirectory(path);
 
-        if (!isFolder) {
-            return fileService.getInfo(path, userId);
-        } else {
+        if (isDirectory) {
             return directoryService.getInfo(path, userId);
+        } else {
+            return fileService.getInfo(path, userId);
         }
     }
 
@@ -42,5 +43,15 @@ public class ResourceService {
         }
 
         return result;
+    }
+
+    public InputStream download(String path, int userId) {
+        boolean isDirectory = directoryService.isDirectory(path);
+
+        if (isDirectory) {
+            return directoryService.download(path, userId);
+        } else {
+            return fileService.download(path, userId);
+        }
     }
 }

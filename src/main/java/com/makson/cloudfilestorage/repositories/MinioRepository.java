@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,26 @@ public class MinioRepository {
         }
     }
 
+    public Optional<InputStream> download(String path, int userId) {
+        String fullPath = getFullPath(path, userId);
+
+        try {
+            return Optional.of(
+                    minioClient.getObject(GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fullPath)
+                            .build())
+            );
+        } catch (ErrorResponseException e) {
+            return Optional.empty();
+        } catch (Exception e) {
+            throw new InternalMinioException(e);
+        }
+    }
+
     private String getFullPath(String path, int userId) {
         return USER_ROOT_DIRECTORY.formatted(userId) + "/" + path;
     }
+
+    //TODO подумать над выносом метода получения фулл пути в статик класс
 }

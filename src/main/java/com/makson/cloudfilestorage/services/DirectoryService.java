@@ -11,6 +11,7 @@ import io.swagger.v3.core.util.PathUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 
 @Service
@@ -38,6 +39,10 @@ public class DirectoryService {
         }
 
         minioRepository.deleteDirectory(path, userId);
+    }
+
+    public InputStream download(String path, int userId) {
+        return null;
     }
 
     public boolean isDirectory(String path) {

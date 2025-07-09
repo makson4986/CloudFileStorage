@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -52,6 +53,11 @@ public class FileService {
 
         minioRepository.uploadFile(path, file, userId);
         return getInfo(path, userId);
+    }
+
+    public InputStream download(String path, int userId) {
+        var downloadedFile = minioRepository.download(path, userId);
+        return downloadedFile.orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
     }
 
     public boolean isFileExists(String path, int userId) {
