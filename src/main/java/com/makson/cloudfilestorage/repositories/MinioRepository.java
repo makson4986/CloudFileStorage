@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -117,6 +118,20 @@ public class MinioRepository {
             );
         } catch (ErrorResponseException e) {
             return Optional.empty();
+        } catch (Exception e) {
+            throw new InternalMinioException(e);
+        }
+    }
+
+    public void createEmptyDirectory(String path, int userId) {
+        String fullPath = getFullPath(path, userId);
+
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(fullPath)
+                    .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
+                    .build());
         } catch (Exception e) {
             throw new InternalMinioException(e);
         }

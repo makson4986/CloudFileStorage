@@ -2,6 +2,7 @@ package com.makson.cloudfilestorage.services;
 
 import com.makson.cloudfilestorage.dto.Resource;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
+import com.makson.cloudfilestorage.exceptions.ResourceAlreadyExistException;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.repositories.MinioRepository;
 import com.makson.cloudfilestorage.utils.PathUtil;
@@ -19,6 +20,24 @@ import java.nio.file.Path;
 public class DirectoryService {
     private final MinioRepository minioRepository;
     private final long DIRECTORY_SIZE = 0;
+
+
+    public ResourceResponseDto createEmpty(String path, int userId) {
+        String parentDirectory = PathUtil.getParent(path);
+        String name = PathUtil.getName(path);
+
+        if (!isDirectoryExists(parentDirectory, userId)) {
+            throw new ResourceNotFoundException("Parent directory does not exist");
+        }
+
+        if (isDirectoryExists(path, userId)) {
+            throw new ResourceAlreadyExistException("Directory '%s' already exists".formatted(name));
+        }
+
+        minioRepository.createEmptyDirectory(path, userId);
+
+        return new ResourceResponseDto(parentDirectory, name, DIRECTORY_SIZE, Resource.DIRECTORY);
+    }
 
     public ResourceResponseDto getInfo(String path, int userId) {
         if (isDirectoryExists(path, userId)) {
