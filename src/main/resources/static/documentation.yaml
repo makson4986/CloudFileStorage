@@ -12,6 +12,8 @@ tags:
     description: Operations about user
   - name: Resources
     description: Operations about resources
+  - name: Directories
+    description: Operations about directories
 paths:
   /api/auth/sign-up:
     post:
@@ -187,6 +189,7 @@ paths:
         - cookieAuth: [ ]
       summary: Uploading resources
       description: Allows you to upload files and folders
+      operationId: uploadResource
       parameters:
         - name: path
           in: query
@@ -220,6 +223,49 @@ paths:
                 $ref: '#/components/schemas/Error'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /api/directory:
+    post:
+      tags:
+        - Directories
+      security:
+        - cookieAuth: [ ]
+      summary: Create directory
+      description: Allows you to create an empty directory
+      operationId: createEmptyDirectory
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the directory
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Folder created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Parent directory does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "409":
+          description: The directory already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+
 
 components:
   schemas:
@@ -252,7 +298,8 @@ components:
         name:
           type: string
         size:
-          type: int64
+          type: integer
+          format: int64
         type:
           type: string
           enum:
