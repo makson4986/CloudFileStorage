@@ -5,10 +5,20 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class PathUtil {
     public static String getName(String path) {
-        return path.substring(path.lastIndexOf("/") + 1);
+        String[] parts = splitPath(path);
+        return parts[parts.length - 1];
     }
 
     public static String getParent(String path) {
-        return path.substring(0, path.lastIndexOf("/") + 1);
+        String[] parts = splitPath(path);
+
+        if (parts.length > 1) {
+            return parts[parts.length - 2];
+        }
+        return "";
+    }
+
+    private static String[] splitPath(String path) {
+        return path.split("(?<=/)");
     }
 }
