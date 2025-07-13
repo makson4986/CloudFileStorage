@@ -10,6 +10,10 @@ spring:
     property-naming-strategy: SNAKE_CASE
   session:
     timeout: 1h
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
 springdoc:
   swagger-ui:
     path: /api/docs
@@ -18,4 +22,3 @@ springdoc:
     enabled: true
 minio:
   bucket-name: user-files
-  user-root-directory: user-%d-files
