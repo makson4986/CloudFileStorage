@@ -224,12 +224,46 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
   /api/directory:
+    get:
+      tags:
+        - Directories
+      security:
+        - cookieAuth: [ ]
+      summary: Get information
+      description: Getting information about the contents of a folder
+      operationId: getContentsInfo
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the directory
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Information received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: Directory does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Directories
       security:
         - cookieAuth: [ ]
-      summary: Create directory
+      summary: Create empty directory
       description: Allows you to create an empty directory
       operationId: createEmptyDirectory
       parameters:

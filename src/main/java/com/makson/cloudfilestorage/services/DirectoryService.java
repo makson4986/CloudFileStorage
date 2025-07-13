@@ -18,7 +18,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class DirectoryService {
     private final MinioRepository minioRepository;
-    private final long DIRECTORY_SIZE = 0;
+    private final Long DIRECTORY_SIZE = null;
 
     public ResourceResponseDto createEmpty(String path) {
         String parentDirectory = PathUtil.getParent(path);
