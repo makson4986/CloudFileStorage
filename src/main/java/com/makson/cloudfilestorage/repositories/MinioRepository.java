@@ -23,19 +23,15 @@ import java.util.Optional;
 public class MinioRepository {
     @Value("${minio.bucket-name}")
     private String bucketName;
-    @Value("${minio.user-root-directory}")
-    private String USER_ROOT_DIRECTORY;
     private final MinioClient minioClient;
 
-    public Optional<StatObjectResponse> getFileInfo(String path, int userId) {
-        String fullPath = getFullPath(path, userId);
-
+    public Optional<StatObjectResponse> getFileInfo(String path) {
         try {
             return Optional.of(
                     minioClient.statObject(
                             StatObjectArgs.builder()
                                     .bucket(bucketName)
-                                    .object(fullPath)
+                                    .object(path)
                                     .build())
             );
         } catch (ErrorResponseException e) {
@@ -45,26 +41,22 @@ public class MinioRepository {
         }
     }
 
-    public void deleteFile(String path, int userId) {
-        String fullPath = getFullPath(path, userId);
-
+    public void deleteFile(String path) {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(fullPath)
+                    .object(path)
                     .build());
         } catch (Exception e) {
             throw new InternalMinioException(e);
         }
     }
 
-    public void uploadFile(String path, MultipartFile file, int userId) {
-        String fullPath = getFullPath(path, userId);
-
+    public void uploadFile(String path, MultipartFile file) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(fullPath)
+                    .object(path)
                     .contentType(file.getContentType())
                     .stream(file.getInputStream(), file.getSize(), -1)
                     .build());
@@ -73,23 +65,22 @@ public class MinioRepository {
         }
     }
 
-    public Iterable<Result<Item>> getFilesInDirectory(String path, int userId, boolean isRecursive) {
-        String fullPath = getFullPath(path, userId);
-
+    public Iterable<Result<Item>> getFilesInDirectory(String path, boolean isRecursive) {
         return minioClient.listObjects(
                 ListObjectsArgs.builder()
                         .bucket(bucketName)
-                        .prefix(fullPath)
+                        .prefix(path)
+                        .delimiter("/")
                         .recursive(isRecursive)
                         .build()
         );
     }
 
-    public void deleteDirectory(String path, int userId) {
+    public void deleteDirectory(String path) {
         List<DeleteObject> resources = new ArrayList<>();
 
         try {
-            for (Result<Item> resource : getFilesInDirectory(path, userId, true)) {
+            for (Result<Item> resource : getFilesInDirectory(path, true)) {
                 resources.add(new DeleteObject(resource.get().objectName()));
             }
 
@@ -106,14 +97,12 @@ public class MinioRepository {
         }
     }
 
-    public Optional<InputStream> download(String path, int userId) {
-        String fullPath = getFullPath(path, userId);
-
+    public Optional<InputStream> download(String path) {
         try {
             return Optional.of(
                     minioClient.getObject(GetObjectArgs.builder()
                             .bucket(bucketName)
-                            .object(fullPath)
+                            .object(path)
                             .build())
             );
         } catch (ErrorResponseException e) {
@@ -123,23 +112,15 @@ public class MinioRepository {
         }
     }
 
-    public void createEmptyDirectory(String path, int userId) {
-        String fullPath = getFullPath(path, userId);
-
+    public void createEmptyDirectory(String path) {
         try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(fullPath)
+                    .object(path)
                     .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
                     .build());
         } catch (Exception e) {
             throw new InternalMinioException(e);
         }
     }
-
-    private String getFullPath(String path, int userId) {
-        return USER_ROOT_DIRECTORY.formatted(userId) + "/" + path;
-    }
-
-    //TODO подумать над выносом метода получения фулл пути в статик класс
 }

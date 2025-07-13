@@ -5,21 +5,16 @@ import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.models.User;
 import com.makson.cloudfilestorage.services.ResourceService;
 import com.makson.cloudfilestorage.utils.PathUtil;
-import io.minio.errors.MinioException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 @RestController
@@ -29,23 +24,23 @@ public class ResourceController {
     private final ResourceService resourceService;
 
     @GetMapping
-    public ResponseEntity<?> getInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = (User) userDetails;
-        ResourceResponseDto resourceInfo = resourceService.getInfo(resourceRequestDto.path(), user.getId());
+    public ResponseEntity<?> getInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        ResourceResponseDto resourceInfo = resourceService.getInfo(path);
         return ResponseEntity.ok(resourceInfo);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = (User) userDetails;
-        resourceService.delete(resourceRequestDto.path(), user.getId());
+    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        resourceService.delete(path);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/download")
-    public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal UserDetails userDetails) {
-        User user = (User) userDetails;
-        InputStream downloadedResource = resourceService.download(resourceRequestDto.path(), user.getId());
+    public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        InputStream downloadedResource = resourceService.download(path);
         InputStreamResource resource = new InputStreamResource(downloadedResource);
 
         ContentDisposition contentDisposition = ContentDisposition.attachment()
@@ -62,9 +57,9 @@ public class ResourceController {
     public ResponseEntity<?> upload(
             @RequestPart("object") List<MultipartFile> files,
             @Validated ResourceRequestDto resourceRequestDto,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User user = (User) userDetails;
-        List<ResourceResponseDto> result = resourceService.upload(resourceRequestDto.path(), files, user.getId());
+            @AuthenticationPrincipal User user) {
+        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        List<ResourceResponseDto> result = resourceService.upload(path, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Optional;
 
 @Service
@@ -20,12 +19,12 @@ import java.util.Optional;
 public class FileService {
     private final MinioRepository minioRepository;
 
-    public ResourceResponseDto getInfo(String path, int userId) {
-        Optional<StatObjectResponse> fileInfo = minioRepository.getFileInfo(path, userId);
+    public ResourceResponseDto getInfo(String path) {
+        Optional<StatObjectResponse> fileInfo = minioRepository.getFileInfo(path);
 
         if (fileInfo.isPresent()) {
             return new ResourceResponseDto(
-                    PathUtil.getParent(path),
+                    PathUtil.getParent(path).replaceFirst("user-\\d+-files/", ""),
                     PathUtil.getName(path),
                     fileInfo.get().size(),
                     Resource.FILE
@@ -35,33 +34,30 @@ public class FileService {
         throw new ResourceNotFoundException("Resource not found");
     }
 
-    public void delete(String path, int userId) {
-        if (!isFileExists(path, userId)) {
+    public void delete(String path) {
+        if (!isFileExists(path)) {
             throw new ResourceNotFoundException("Resource not found");
 
         }
 
-        minioRepository.deleteFile(path, userId);
+        minioRepository.deleteFile(path);
     }
 
-    public ResourceResponseDto upload(String pathTo, MultipartFile file, int userId) {
-        String path = pathTo + file.getOriginalFilename();
-
-        if (isFileExists(path, userId)) {
+    public ResourceResponseDto upload(String path, MultipartFile file) {
+        if (isFileExists(path)) {
             throw new ResourceAlreadyExistException("File '%s' already exists".formatted(file.getOriginalFilename()));
         }
 
-        minioRepository.uploadFile(path, file, userId);
-        return getInfo(path, userId);
+        minioRepository.uploadFile(path, file);
+        return getInfo(path);
     }
 
-    public InputStream download(String path, int userId) {
-        var downloadedFile = minioRepository.download(path, userId);
+    public InputStream download(String path) {
+        var downloadedFile = minioRepository.download(path);
         return downloadedFile.orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
     }
 
-    public boolean isFileExists(String path, int userId) {
-        Optional<StatObjectResponse> fileInfo = minioRepository.getFileInfo(path, userId);
-        return fileInfo.isPresent();
+    public boolean isFileExists(String path) {
+        return minioRepository.getFileInfo(path).isPresent();
     }
 }
