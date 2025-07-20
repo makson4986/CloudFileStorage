@@ -43,10 +43,10 @@ public class ResourceService {
 
     public List<ResourceResponseDto> upload(String pathTo, List<MultipartFile> files) {
         List<ResourceResponseDto> result = new ArrayList<>();
+        directoryService.createParentDirectories(pathTo);
 
         for (MultipartFile file : files) {
             String path = pathTo + file.getOriginalFilename();
-            directoryService.createParentDirectories(path);
             result.add(fileService.upload(path, file));
         }
 
