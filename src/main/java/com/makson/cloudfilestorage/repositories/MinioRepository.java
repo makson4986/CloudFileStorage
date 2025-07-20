@@ -1,6 +1,8 @@
 package com.makson.cloudfilestorage.repositories;
 
 import com.makson.cloudfilestorage.exceptions.InternalMinioException;
+import com.makson.cloudfilestorage.exceptions.ResourceDownloadException;
+import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
@@ -13,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +77,23 @@ public class MinioRepository {
         );
     }
 
+    public List<GetObjectResponse> downloadFilesInDirectory(String path) {
+        Iterable<Result<Item>> files = getFilesInDirectory(path, true);
+        List<GetObjectResponse> result = new ArrayList<>();
+
+        try {
+            for (Result<Item> file : files) {
+                result.add(download(file.get().objectName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Resource not found"))
+                );
+            }
+        } catch (Exception e) {
+            throw new ResourceDownloadException("Error downloading resource. Please try again later", e);
+        }
+
+        return result;
+    }
+
     public void deleteDirectory(String path) {
         List<DeleteObject> resources = new ArrayList<>();
 
@@ -97,7 +115,7 @@ public class MinioRepository {
         }
     }
 
-    public Optional<InputStream> download(String path) {
+    public Optional<GetObjectResponse> download(String path) {
         try {
             return Optional.of(
                     minioClient.getObject(GetObjectArgs.builder()
@@ -108,7 +126,7 @@ public class MinioRepository {
         } catch (ErrorResponseException e) {
             return Optional.empty();
         } catch (Exception e) {
-            throw new InternalMinioException(e);
+            throw new ResourceDownloadException("Error downloading resource. Please try again later", e);
         }
     }
 

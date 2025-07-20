@@ -25,26 +25,26 @@ public class ResourceController {
 
     @GetMapping
     public ResponseEntity<?> getInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         ResourceResponseDto resourceInfo = resourceService.getInfo(path);
         return ResponseEntity.ok(resourceInfo);
     }
 
     @DeleteMapping
     public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         resourceService.delete(path);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/download")
     public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
-        InputStream downloadedResource = resourceService.download(path);
-        InputStreamResource resource = new InputStreamResource(downloadedResource);
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
+        String fileName = PathUtil.getName(resourceRequestDto.path()).replace("/", "");
+        InputStreamResource resource = new InputStreamResource(resourceService.download(path));
 
         ContentDisposition contentDisposition = ContentDisposition.attachment()
-                .filename(PathUtil.getName(resourceRequestDto.path()), StandardCharsets.UTF_8)
+                .filename(fileName, StandardCharsets.UTF_8)
                 .build();
 
         return ResponseEntity.ok()
@@ -58,7 +58,7 @@ public class ResourceController {
             @RequestPart("object") List<MultipartFile> files,
             @Validated ResourceRequestDto resourceRequestDto,
             @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         List<ResourceResponseDto> result = resourceService.upload(path, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }

@@ -27,14 +27,14 @@ public class DirectoryController {
 
     @GetMapping
     public ResponseEntity<?> getContentsInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         List<ResourceResponseDto> result = resourceService.getContentsInfo(path);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping
     public ResponseEntity<?> createEmptyDirectory(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathRelativeUserDirectory(resourceRequestDto.path(), user);
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         ResourceResponseDto result = directoryService.createEmpty(path);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }

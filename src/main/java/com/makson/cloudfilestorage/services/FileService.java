@@ -24,7 +24,7 @@ public class FileService {
 
         if (fileInfo.isPresent()) {
             return new ResourceResponseDto(
-                    PathUtil.getParent(path).replaceFirst("user-\\d+-files/", ""),
+                    PathUtil.removeIdentificationDirectory(PathUtil.getParent(path)),
                     PathUtil.getName(path),
                     fileInfo.get().size(),
                     Resource.FILE

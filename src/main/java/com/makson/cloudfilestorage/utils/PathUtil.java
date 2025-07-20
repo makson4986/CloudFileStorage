@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 @UtilityClass
 public class PathUtil {
-    private static final String USER_ROOT_DIRECTORY = "user-%d-files/";
+    private static final String IDENTIFICATION_DIRECTORY = "user-%d-files/";
 
     public static String getName(String path) {
         String[] parts = splitPath(path);
@@ -35,7 +35,19 @@ public class PathUtil {
         return pathBuilder.toString();
     }
 
-    public static String getFullPathRelativeUserDirectory(String path, User user) {
-        return resolve(USER_ROOT_DIRECTORY.formatted((user.getId())), path);
+    public static String getFullPathWithIdentificationDirectory(String path, User user) {
+        return resolve(IDENTIFICATION_DIRECTORY.formatted((user.getId())), path);
+    }
+
+    public static String removeIdentificationDirectory(String path) {
+        return path.replaceFirst("user-\\d+-files/", "");
+    }
+
+    public static String relativize(String basePath, String fullPath) {
+        if (fullPath.startsWith(basePath)) {
+            return fullPath.substring(basePath.length());
+        }
+
+        throw new IllegalArgumentException("BasePath is not a Path that can be relativized against this path");
     }
 }

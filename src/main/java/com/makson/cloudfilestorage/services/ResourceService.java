@@ -3,12 +3,15 @@ package com.makson.cloudfilestorage.services;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.exceptions.InternalMinioException;
 import io.minio.Result;
+import io.minio.errors.MinioException;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
