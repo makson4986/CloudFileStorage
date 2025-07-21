@@ -28,7 +28,7 @@ public class DirectoryController {
     @GetMapping
     public ResponseEntity<?> getContentsInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
         String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
-        List<ResourceResponseDto> result = resourceService.getContentsInfo(path);
+        List<ResourceResponseDto> result = resourceService.getContentsInfo(path, false);
         return ResponseEntity.ok(result);
     }
 

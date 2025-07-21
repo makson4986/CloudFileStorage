@@ -48,7 +48,6 @@ public class GlobalExceptionHandlerController {
         return ResponseEntity.badRequest().body(errorDto);
     }
 
-
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleAuthenticationException(Exception ex) {
         log.warn(ex.getMessage());

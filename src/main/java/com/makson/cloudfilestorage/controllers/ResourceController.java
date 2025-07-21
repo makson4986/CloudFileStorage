@@ -1,5 +1,6 @@
 package com.makson.cloudfilestorage.controllers;
 
+import com.makson.cloudfilestorage.dto.QueryDto;
 import com.makson.cloudfilestorage.dto.ResourceRequestDto;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.models.User;
@@ -13,7 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -30,13 +30,6 @@ public class ResourceController {
         return ResponseEntity.ok(resourceInfo);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
-        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
-        resourceService.delete(path);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/download")
     public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
         String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
@@ -51,6 +44,18 @@ public class ResourceController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .body(resource);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@Validated QueryDto queryDto) {
+        return ResponseEntity.ok(resourceService.search(queryDto.query()));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+        String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
+        resourceService.delete(path);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping

@@ -102,12 +102,12 @@ public class DirectoryService {
         }
     }
 
-    public Iterable<Result<Item>> getFilesInDirectory(String path) {
+    public Iterable<Result<Item>> getFilesInDirectory(String path, boolean isRecursive) {
         if (!isDirectoryExists(path)) {
             throw new ResourceNotFoundException("Resource not found");
         }
 
-        return minioRepository.getFilesInDirectory(path, false);
+        return minioRepository.getFilesInDirectory(path, isRecursive);
     }
 
     public boolean isDirectory(String path) {
