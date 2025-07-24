@@ -31,12 +31,12 @@ public class FileService {
             );
         }
 
-        throw new ResourceNotFoundException("Resource not found");
+        throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
     }
 
     public void delete(String path) {
         if (!isFileExists(path)) {
-            throw new ResourceNotFoundException("Resource not found");
+            throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
 
         }
 
@@ -54,7 +54,22 @@ public class FileService {
 
     public InputStream download(String path) {
         var downloadedFile = minioRepository.download(path);
-        return downloadedFile.orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+        return downloadedFile.orElseThrow(() -> new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path))))
+        ;
+    }
+
+    public ResourceResponseDto renameOrMove(String from, String to) {
+        if (isFileExists(to)) {
+            throw new ResourceAlreadyExistException("File '%s' already exists".formatted(PathUtil.getName(to)));
+        }
+
+        if (!isFileExists(from)) {
+            throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(from)));
+        }
+
+        minioRepository.copy(from, to);
+        minioRepository.deleteFile(from);
+        return getInfo(to);
     }
 
     public boolean isFileExists(String path) {

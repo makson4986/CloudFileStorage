@@ -1,5 +1,6 @@
 package com.makson.cloudfilestorage.controllers;
 
+import com.makson.cloudfilestorage.dto.MovingResourceDto;
 import com.makson.cloudfilestorage.dto.QueryDto;
 import com.makson.cloudfilestorage.dto.ResourceRequestDto;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
@@ -26,8 +27,7 @@ public class ResourceController {
     @GetMapping
     public ResponseEntity<?> getInfo(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
         String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
-        ResourceResponseDto resourceInfo = resourceService.getInfo(path);
-        return ResponseEntity.ok(resourceInfo);
+        return ResponseEntity.ok(resourceService.getInfo(path));
     }
 
     @GetMapping("/download")
@@ -49,6 +49,14 @@ public class ResourceController {
     @GetMapping("/search")
     public ResponseEntity<?> search(@Validated QueryDto queryDto) {
         return ResponseEntity.ok(resourceService.search(queryDto.query()));
+    }
+
+    @GetMapping("/move")
+    public ResponseEntity<?> renameOrMove(@Validated MovingResourceDto movingResourceDto, @AuthenticationPrincipal User user) {
+        String fromPath = PathUtil.getFullPathWithIdentificationDirectory(movingResourceDto.from(), user);
+        String toPath = PathUtil.getFullPathWithIdentificationDirectory(movingResourceDto.to(), user);
+
+        return ResponseEntity.ok(resourceService.renameOrMove(fromPath, toPath));
     }
 
     @DeleteMapping

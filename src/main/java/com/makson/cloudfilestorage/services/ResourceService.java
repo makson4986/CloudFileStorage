@@ -27,9 +27,9 @@ public class ResourceService {
 
         if (isDirectory) {
             return directoryService.getInfo(path);
-        } else {
-            return fileService.getInfo(path);
         }
+
+        return fileService.getInfo(path);
     }
 
     public void delete(String path) {
@@ -37,14 +37,14 @@ public class ResourceService {
 
         if (isDirectory) {
             directoryService.delete(path);
-        } else {
-            fileService.delete(path);
         }
+
+        fileService.delete(path);
     }
 
     public List<ResourceResponseDto> upload(String pathTo, List<MultipartFile> files) {
         List<ResourceResponseDto> result = new ArrayList<>();
-        directoryService.createParentDirectories(pathTo);
+        directoryService.createParentDirectories(PathUtil.getParent(pathTo));
 
         for (MultipartFile file : files) {
             String path = pathTo + file.getOriginalFilename();
@@ -59,9 +59,9 @@ public class ResourceService {
 
         if (isDirectory) {
             return directoryService.download(path);
-        } else {
-            return fileService.download(path);
         }
+
+        return fileService.download(path);
     }
 
     public List<ResourceResponseDto> getContentsInfo(String path, boolean isRecursive) {
@@ -79,6 +79,8 @@ public class ResourceService {
             throw new InternalMinioException(e);
         }
 
+        //TODO tut
+
         return result;
     }
 
@@ -94,5 +96,15 @@ public class ResourceService {
         }
 
         return result;
+    }
+
+    public ResourceResponseDto renameOrMove(String from, String to) {
+        boolean isDirectory = directoryService.isDirectory(from);
+
+        if (isDirectory) {
+            return directoryService.renameOrMove(from, to);
+        }
+
+        return fileService.renameOrMove(from, to);
     }
 }

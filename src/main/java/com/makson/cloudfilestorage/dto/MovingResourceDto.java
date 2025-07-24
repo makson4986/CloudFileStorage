@@ -2,6 +2,7 @@ package com.makson.cloudfilestorage.dto;
 
 import com.makson.cloudfilestorage.validation.Path;
 
-public record ResourceRequestDto(@Path String path) {
-
-}
+public record MovingResourceDto(
+        @Path String from,
+        @Path String to
+) { }

@@ -3,6 +3,7 @@ package com.makson.cloudfilestorage.repositories;
 import com.makson.cloudfilestorage.exceptions.InternalMinioException;
 import com.makson.cloudfilestorage.exceptions.ResourceDownloadException;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
+import com.makson.cloudfilestorage.utils.PathUtil;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
@@ -85,7 +86,7 @@ public class MinioRepository {
         try {
             for (Result<Item> file : files) {
                 result.add(download(file.get().objectName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Resource not found"))
+                        .orElseThrow(() -> new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path))))
                 );
             }
         } catch (Exception e) {
@@ -137,6 +138,21 @@ public class MinioRepository {
                     .bucket(bucketName)
                     .object(path)
                     .stream(new ByteArrayInputStream(new byte[0]), 0, -1)
+                    .build());
+        } catch (Exception e) {
+            throw new InternalMinioException(e);
+        }
+    }
+
+    public void copy(String from, String to) {
+        try {
+            minioClient.copyObject(CopyObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(to)
+                    .source(CopySource.builder()
+                            .bucket(bucketName)
+                            .object(from)
+                            .build())
                     .build());
         } catch (Exception e) {
             throw new InternalMinioException(e);

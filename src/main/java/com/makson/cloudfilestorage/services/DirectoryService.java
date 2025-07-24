@@ -2,6 +2,7 @@ package com.makson.cloudfilestorage.services;
 
 import com.makson.cloudfilestorage.dto.Resource;
 import com.makson.cloudfilestorage.dto.ResourceResponseDto;
+import com.makson.cloudfilestorage.exceptions.InternalMinioException;
 import com.makson.cloudfilestorage.exceptions.ResourceAlreadyExistException;
 import com.makson.cloudfilestorage.exceptions.ResourceDownloadException;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
@@ -61,12 +62,12 @@ public class DirectoryService {
             );
         }
 
-        throw new ResourceNotFoundException("Resource not found");
+        throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
     }
 
     public void delete(String path) {
         if (!isDirectoryExists(path)) {
-            throw new ResourceNotFoundException("Resource not found");
+            throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
         }
 
         minioRepository.deleteDirectory(path);
@@ -77,7 +78,7 @@ public class DirectoryService {
 
         try (ZipOutputStream zip = new ZipOutputStream(byteArrayOutputStream)) {
             if (!isDirectoryExists(path)) {
-                throw new ResourceNotFoundException("Resource not found");
+                throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
             }
 
             for (var file : minioRepository.downloadFilesInDirectory(path)) {
@@ -91,9 +92,33 @@ public class DirectoryService {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
+    public ResourceResponseDto renameOrMove(String from, String to) {
+        if (isDirectoryExists(to)) {
+            throw new ResourceAlreadyExistException("Resource '%s' already exists".formatted(to));
+        }
+
+        if (!isDirectoryExists(from)) {
+            throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(from)));
+        }
+
+        for (Result<Item> resource : getFilesInDirectory(from, true)) {
+            try {
+                String fromPath = resource.get().objectName();
+                String toPath = resource.get().objectName().replace(from, to);
+                minioRepository.copy(fromPath, toPath);
+            } catch (Exception e) {
+                throw new InternalMinioException(e);
+            }
+        }
+
+        minioRepository.deleteDirectory(from);
+        return getInfo(to);
+
+    }
+
     public void createParentDirectories(String path) {
         String[] partsPath = PathUtil.splitPath(path);
-        String[] parentDirectories = Arrays.copyOfRange(partsPath, 0, partsPath.length - 1);
+        String[] parentDirectories = Arrays.copyOfRange(partsPath, 0, partsPath.length);
         StringBuilder pathToParent = new StringBuilder();
 
         for (String parentDirectory : parentDirectories) {
@@ -104,7 +129,7 @@ public class DirectoryService {
 
     public Iterable<Result<Item>> getFilesInDirectory(String path, boolean isRecursive) {
         if (!isDirectoryExists(path)) {
-            throw new ResourceNotFoundException("Resource not found");
+            throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
         }
 
         return minioRepository.getFilesInDirectory(path, isRecursive);
