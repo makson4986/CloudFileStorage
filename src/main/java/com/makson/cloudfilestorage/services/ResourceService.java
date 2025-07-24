@@ -7,7 +7,6 @@ import com.makson.cloudfilestorage.utils.PathUtil;
 import io.minio.Result;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

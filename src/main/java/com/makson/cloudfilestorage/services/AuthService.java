@@ -1,7 +1,7 @@
 package com.makson.cloudfilestorage.services;
 
-import com.makson.cloudfilestorage.dto.UserResponseDto;
 import com.makson.cloudfilestorage.dto.UserRequestDto;
+import com.makson.cloudfilestorage.dto.UserResponseDto;
 import com.makson.cloudfilestorage.exceptions.DataBaseException;
 import com.makson.cloudfilestorage.exceptions.UserAlreadyExistException;
 import com.makson.cloudfilestorage.models.User;

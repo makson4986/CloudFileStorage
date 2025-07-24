@@ -2,11 +2,9 @@ package com.makson.cloudfilestorage.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.makson.cloudfilestorage.dto.ErrorDto;
-import com.sun.net.httpserver.HttpsParameters;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
