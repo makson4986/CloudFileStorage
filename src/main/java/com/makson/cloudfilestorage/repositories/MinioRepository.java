@@ -2,8 +2,6 @@ package com.makson.cloudfilestorage.repositories;
 
 import com.makson.cloudfilestorage.exceptions.InternalMinioException;
 import com.makson.cloudfilestorage.exceptions.ResourceDownloadException;
-import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
-import com.makson.cloudfilestorage.utils.PathUtil;
 import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import io.minio.messages.DeleteError;
@@ -75,23 +73,6 @@ public class MinioRepository {
                         .recursive(isRecursive)
                         .build()
         );
-    }
-
-    public List<GetObjectResponse> downloadFilesInDirectory(String path) {
-        Iterable<Result<Item>> files = getFilesInDirectory(path, true);
-        List<GetObjectResponse> result = new ArrayList<>();
-
-        try {
-            for (Result<Item> file : files) {
-                result.add(download(file.get().objectName())
-                        .orElseThrow(() -> new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path))))
-                );
-            }
-        } catch (Exception e) {
-            throw new ResourceDownloadException("Error downloading resource. Please try again later", e);
-        }
-
-        return result;
     }
 
     public void deleteDirectory(String path) {

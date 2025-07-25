@@ -8,6 +8,7 @@ import com.makson.cloudfilestorage.exceptions.ResourceDownloadException;
 import com.makson.cloudfilestorage.exceptions.ResourceNotFoundException;
 import com.makson.cloudfilestorage.repositories.MinioRepository;
 import com.makson.cloudfilestorage.utils.PathUtil;
+import io.minio.GetObjectResponse;
 import io.minio.Result;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -78,7 +81,7 @@ public class DirectoryService {
                 throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path)));
             }
 
-            for (var file : minioRepository.downloadFilesInDirectory(path)) {
+            for (var file : downloadFilesInDirectory(path)) {
                 String resourceName = PathUtil.relativize(PathUtil.getParent(path), file.object());
                 addResourceToZip(resourceName, zip, file);
             }
@@ -160,5 +163,22 @@ public class DirectoryService {
         } catch (IOException e) {
             throw new ResourceDownloadException("Error downloading resource. Please try again later", e);
         }
+    }
+
+    private List<GetObjectResponse> downloadFilesInDirectory(String path) {
+        Iterable<Result<Item>> files = minioRepository.getFilesInDirectory(path, true);
+        List<GetObjectResponse> result = new ArrayList<>();
+
+        try {
+            for (Result<Item> file : files) {
+                result.add(minioRepository.download(file.get().objectName())
+                        .orElseThrow(() -> new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path))))
+                );
+            }
+        } catch (Exception e) {
+            throw new ResourceDownloadException("Error downloading resource. Please try again later", e);
+        }
+
+        return result;
     }
 }
