@@ -247,15 +247,39 @@ paths:
           $ref: '#/components/responses/ResourceNotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
-
+  /api/resource/search:
     get:
-    tags:
-      - Resources
-    security: 
-      - cookieAuth: [ ]
-    summary: Search for a resource
-    description: Allows you to find any resource by any word
-    operationId: searchResource
+      tags:
+        - Resources
+      security: 
+        - cookieAuth: [ ]
+      summary: Search for a resource
+      description: Allows you to find any resource by any word
+      operationId: searchResource
+      parameters:
+        - name: query
+          in: query
+          description: Search query in URL-encoded format
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        "400":
+          description: Invalid or missing search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /api/directory:
     get:
       tags:
