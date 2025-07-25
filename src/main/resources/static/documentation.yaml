@@ -5,8 +5,6 @@ info:
     Multi-user file cloud. Users of the service can use it to upload and store files. 
     The source of inspiration for the project is Google Drive.
   version: 1.0.12
-servers:
-  - url: http://localhost:8080
 tags:
   - name: User
     description: Operations about user
@@ -15,6 +13,26 @@ tags:
   - name: Directories
     description: Operations about directories
 paths:
+  /api/user/me:
+    get:
+      tags:
+        - User
+      security:
+        - cookieAuth: []
+      summary: Current user
+      description: Returns the currently logged in user
+      operationId: currentUser
+      responses:
+        "200":
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /api/auth/sign-up:
     post:
       tags:
@@ -95,124 +113,6 @@ paths:
           description: Successful logout
         "401":
           $ref: '#/components/responses/UnauthorizedError'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-  /api/user/me:
-    get:
-      tags:
-        - User
-      security:
-        - cookieAuth: []
-      summary: Current user
-      description: Returns the currently logged in user
-      operationId: currentUser
-      responses:
-        "200":
-          description: Successful request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-  /api/resource:
-    get:
-      tags:
-        - Resources
-      security:
-        - cookieAuth: []
-      summary: Resource info
-      description: Getting information about a resource
-      operationId: resourceInfo
-      parameters:
-        - name: path
-          in: query
-          description: Full path to the resource
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Successful receipt of information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Resource'
-        "400":
-          $ref: '#/components/responses/InvalidPath'
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          $ref: '#/components/responses/ResourceNotFound'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-    delete:
-      tags:
-        - Resources
-      security:
-        - cookieAuth: [ ]
-      summary: Deleting a resource
-      description: Removes the specified resource
-      operationId: deleteResource
-      parameters:
-        - name: path
-          in: query
-          description: Full path to the resource
-          required: true
-          schema:
-            type: string
-      responses:
-        "204":
-          description: Successful resource deletion
-        "400":
-          $ref: '#/components/responses/InvalidPath'
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "404":
-          $ref: '#/components/responses/ResourceNotFound'
-        "500":
-          $ref: '#/components/responses/InternalServerError'
-    post:
-      tags:
-        - Resources
-      security:
-        - cookieAuth: [ ]
-      summary: Uploading resources
-      description: Allows you to upload files and folders
-      operationId: uploadResource
-      parameters:
-        - name: path
-          in: query
-          description: Full path to the resource
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ResourceRequestBody'
-          
-      responses:
-        "201":
-          description: The resource has been loaded successfully
-        "400":
-          description: Invalid or missing files
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "401":
-          $ref: '#/components/responses/UnauthorizedError'
-        "409":
-          description: The file already exists
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         "500":
           $ref: '#/components/responses/InternalServerError'
   /api/resource/download:
@@ -321,7 +221,103 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/resource:
+    get:
+      tags:
+        - Resources
+      security:
+        - cookieAuth: []
+      summary: Resource info
+      description: Getting information about a resource
+      operationId: resourceInfo
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the resource
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful receipt of information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Resources
+      security:
+        - cookieAuth: [ ]
+      summary: Uploading resources
+      description: Allows you to upload files and folders
+      operationId: uploadResource
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the resource
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResourceRequestBody'
+      responses:
+        "201":
+          description: The resource has been loaded successfully
+        "400":
+          description: Invalid or missing files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "409":
+          description: The file already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Resources
+      security:
+        - cookieAuth: [ ]
+      summary: Deleting a resource
+      description: Removes the specified resource
+      operationId: deleteResource
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the resource
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successful resource deletion
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
   /api/directory:
