@@ -145,11 +145,7 @@ paths:
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/ResourceNotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
     delete:
@@ -175,11 +171,7 @@ paths:
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/ResourceNotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -223,6 +215,47 @@ paths:
                 $ref: '#/components/schemas/Error'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /api/resource/download:
+    get:
+      tags:
+        - Resources
+      security:
+        - cookieAuth: [ ]
+      summary: Downloading a resource
+      description: Allows you to download the resource
+      operationId: downloadResource
+      parameters:
+        - name: path
+          in: query
+          description: Full path to the resource
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: File downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFound'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+    tags:
+      - Resources
+    security: 
+      - cookieAuth: [ ]
+    summary: Search for a resource
+    description: Allows you to find any resource by any word
+    operationId: searchResource
   /api/directory:
     get:
       tags:
@@ -251,11 +284,7 @@ paths:
         "401":
           $ref: '#/components/responses/UnauthorizedError'
         "404":
-          description: Directory does not exist
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+          $ref: '#/components/responses/ResourceNotFound'
         "500":
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -298,9 +327,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         "500":
           $ref: '#/components/responses/InternalServerError'
-
-
-
 components:
   schemas:
     Error:
@@ -368,6 +394,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    ResourceNotFound:
+        description: Resource not found
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
   securitySchemes:
     cookieAuth:
       type: apiKey

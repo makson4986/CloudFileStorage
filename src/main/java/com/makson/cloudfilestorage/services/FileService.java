@@ -54,8 +54,7 @@ public class FileService {
 
     public InputStream download(String path) {
         var downloadedFile = minioRepository.download(path);
-        return downloadedFile.orElseThrow(() -> new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path))))
-        ;
+        return downloadedFile.orElseThrow(() -> new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(path))));
     }
 
     public ResourceResponseDto renameOrMove(String from, String to) {
