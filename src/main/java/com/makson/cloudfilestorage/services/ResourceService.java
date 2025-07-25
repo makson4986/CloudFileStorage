@@ -5,13 +5,16 @@ import com.makson.cloudfilestorage.exceptions.InternalMinioException;
 import com.makson.cloudfilestorage.models.User;
 import com.makson.cloudfilestorage.utils.PathUtil;
 import io.minio.Result;
+import io.minio.errors.MinioException;
 import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,11 +77,9 @@ public class ResourceService {
                     result.add(getInfo(fileName));
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | MinioException | GeneralSecurityException e) {
             throw new InternalMinioException(e);
         }
-
-        //TODO tut
 
         return result;
     }
