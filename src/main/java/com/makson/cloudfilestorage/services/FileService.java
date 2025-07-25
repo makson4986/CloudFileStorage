@@ -58,12 +58,12 @@ public class FileService {
     }
 
     public ResourceResponseDto renameOrMove(String from, String to) {
-        if (isFileExists(to)) {
-            throw new ResourceAlreadyExistException("File '%s' already exists".formatted(PathUtil.getName(to)));
-        }
-
         if (!isFileExists(from)) {
             throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(from)));
+        }
+
+        if (isFileExists(to)) {
+            throw new ResourceAlreadyExistException("File '%s' already exists".formatted(PathUtil.getName(to)));
         }
 
         minioRepository.copy(from, to);

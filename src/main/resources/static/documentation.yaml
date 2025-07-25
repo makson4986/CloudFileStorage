@@ -280,6 +280,50 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         "500":
           $ref: '#/components/responses/InternalServerError'
+  /api/resource/move:
+    get:
+      tags:
+        - Resources
+      security: 
+        - cookieAuth: [ ]
+      summary: Rename or move Resource
+      description: Allows you to rename or move a resource
+      operationId: renameOrMoveResource
+      parameters:
+        - name: from
+          in: query
+          description: Old path
+          required: true
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: New path
+          required: true
+          schema: 
+            type: string
+      responses:
+        "200":
+          description: Successful search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        "400":
+          $ref: '#/components/responses/InvalidPath'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/ResourceNotFound'
+        "409":
+          description: Resource located on the path "to" already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /api/directory:
     get:
       tags:

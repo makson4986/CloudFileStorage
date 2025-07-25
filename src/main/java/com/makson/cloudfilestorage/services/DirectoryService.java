@@ -90,12 +90,12 @@ public class DirectoryService {
     }
 
     public ResourceResponseDto renameOrMove(String from, String to) {
-        if (isDirectoryExists(to)) {
-            throw new ResourceAlreadyExistException("Resource '%s' already exists".formatted(to));
-        }
-
         if (!isDirectoryExists(from)) {
             throw new ResourceNotFoundException("Resource '%s' is not found".formatted(PathUtil.getName(from)));
+        }
+
+        if (isDirectoryExists(to)) {
+            throw new ResourceAlreadyExistException("Resource '%s' already exists".formatted(to));
         }
 
         for (Result<Item> resource : getFilesInDirectory(from, true)) {
