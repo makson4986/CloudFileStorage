@@ -139,6 +139,10 @@ public class DirectoryService {
         return path.endsWith("/");
     }
 
+    public void createIdentificationDirectory(String path) {
+        minioRepository.createEmptyDirectory(path);
+    }
+
     private boolean isDirectoryExists(String path) {
         return minioRepository.getFileInfo(path).isPresent();
     }

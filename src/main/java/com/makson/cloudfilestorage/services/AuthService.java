@@ -30,6 +30,7 @@ public class AuthService {
     private final CookieClearingLogoutHandler cookieClearingLogoutHandler;
     private final SecurityContextLogoutHandler securityContextLogoutHandler;
     private final UserService userService;
+    private final DirectoryService directoryService;
 
     public UserResponseDto signUp(UserRequestDto userRequestDto, HttpServletRequest request, HttpServletResponse response) {
         User user = User.builder()
@@ -48,6 +49,7 @@ public class AuthService {
         }
 
         signIn(userRequestDto, request, response);
+        directoryService.createIdentificationDirectory("user-%s-files/".formatted(registeredUser.getId()));
         return new UserResponseDto(registeredUser.getUsername());
     }
 
