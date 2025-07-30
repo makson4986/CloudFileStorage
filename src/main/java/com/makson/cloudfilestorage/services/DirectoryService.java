@@ -117,6 +117,10 @@ public class DirectoryService {
     }
 
     public void createParentDirectories(String path) {
+        if (path.isBlank()) {
+            return;
+        }
+
         String[] partsPath = PathUtil.splitPath(path);
         String[] parentDirectories = Arrays.copyOfRange(partsPath, 0, partsPath.length);
         StringBuilder pathToParent = new StringBuilder();
@@ -137,6 +141,7 @@ public class DirectoryService {
 
     public boolean isDirectory(String path) {
         return path.endsWith("/");
+        //TODO перенести в PathUtil
     }
 
     public void createIdentificationDirectory(String path) {
