@@ -10,6 +10,6 @@ public class PathValidator implements ConstraintValidator<Path, String> {
 
     @Override
     public boolean isValid(String  value, ConstraintValidatorContext context) {
-        return value.matches(CORRECT_PATH) && PathUtil.getName(value).length() < 64;
+        return value.matches(CORRECT_PATH) && PathUtil.getName(value).length() <= 200;
     }
 }
