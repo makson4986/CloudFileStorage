@@ -1,8 +1,0 @@
-minio:
-  endpoint: endpoint
-  access-key: access-key
-  secret-key: secret-key
-spring:
-  datasource:
-    username: username
-    password: password
