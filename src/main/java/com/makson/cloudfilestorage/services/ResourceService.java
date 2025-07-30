@@ -25,7 +25,7 @@ public class ResourceService {
     private final DirectoryService directoryService;
 
     public ResourceResponseDto getInfo(String path) {
-        boolean isDirectory = directoryService.isDirectory(path);
+        boolean isDirectory = PathUtil.isDirectory(path);
 
         if (isDirectory) {
             return directoryService.getInfo(path);
@@ -35,7 +35,7 @@ public class ResourceService {
     }
 
     public void delete(String path) {
-        boolean isDirectory = directoryService.isDirectory(path);
+        boolean isDirectory = PathUtil.isDirectory(path);
 
         if (isDirectory) {
             directoryService.delete(path);
@@ -57,7 +57,7 @@ public class ResourceService {
     }
 
     public InputStream download(String path) {
-        boolean isDirectory = directoryService.isDirectory(path);
+        boolean isDirectory = PathUtil.isDirectory(path);
 
         if (isDirectory) {
             return directoryService.download(path);
@@ -99,7 +99,7 @@ public class ResourceService {
     }
 
     public ResourceResponseDto renameOrMove(String from, String to) {
-        boolean isDirectory = directoryService.isDirectory(from);
+        boolean isDirectory = PathUtil.isDirectory(from);
 
         if (isDirectory) {
             return directoryService.renameOrMove(from, to);

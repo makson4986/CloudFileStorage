@@ -139,11 +139,6 @@ public class DirectoryService {
         return minioRepository.getFilesInDirectory(path, isRecursive);
     }
 
-    public boolean isDirectory(String path) {
-        return path.endsWith("/");
-        //TODO перенести в PathUtil
-    }
-
     public void createIdentificationDirectory(String path) {
         minioRepository.createEmptyDirectory(path);
     }

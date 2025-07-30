@@ -21,6 +21,10 @@ public class PathUtil {
         return String.join("", parentDirectory);
     }
 
+    public static boolean isDirectory(String path) {
+        return path.endsWith("/");
+    }
+
     public static String[] splitPath(String path) {
         return path.split("(?<=/)");
     }
