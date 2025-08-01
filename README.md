@@ -41,7 +41,7 @@
    `CREATE USER {username} WITH PASSWORD {password};`  
    `GRANT ALL PRIVILEGES ON DATABASE {database-name} TO {username};`
 5. Собрать docker image для frontend. Для этого перейти в соответствующую папку и выполнить команду ниже, ее следует выполнять в той же самой папке, где лежат dockerfile.  
-`docker build -t cloud_file_storage_frontend .`
+`docker build -t frontend .`
 6. Собрать docker image проекта и запустить контейнеры. Для этого в соответствующую папку и выполнить команду ниже, ее следует выполнять в той же самой папке, где лежат dockerfile и compose.yaml  
 `docker-compose up -d --build`
 7. Запущенное приложение можно найти по этому адресу - http://localhost:8080
