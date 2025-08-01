@@ -1,0 +1,14 @@
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.fasterxml.jackson: DEBUG
+    org.springframework.http: DEBUG
+    com.fasterxml.jackson.databind: TRACE
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/users
+  data:
+    redis:
+      host: localhost
+minio:
+  endpoint: http://localhost:9000

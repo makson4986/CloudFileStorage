@@ -1,9 +1,9 @@
 spring:
-  profiles:
-    active: dev
   datasource:
-    url: jdbc:postgresql://localhost:5433/users
+    url: jdbc:postgresql://postgres:5432/users
     driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_LOGIN:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
   jackson:
@@ -14,6 +14,9 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  data:
+    redis:
+      host: redis
 springdoc:
   swagger-ui:
     path: /api/docs
@@ -22,3 +25,6 @@ springdoc:
     enabled: true
 minio:
   bucket-name: user-files
+  endpoint: http://minio:9000
+  access-key: ${MINIO_LOGIN:admin}
+  secret-key: ${MINIO_PASSWORD:password}
