@@ -1,0 +1,6 @@
+ext {
+    versions = [
+            "springdoc": '2.8.8',
+            "minio": '8.5.17'
+    ]
+}
