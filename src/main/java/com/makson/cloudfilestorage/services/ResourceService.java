@@ -39,6 +39,7 @@ public class ResourceService {
 
         if (isDirectory) {
             directoryService.delete(path);
+            return;
         }
 
         fileService.delete(path);
