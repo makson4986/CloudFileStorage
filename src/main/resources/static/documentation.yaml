@@ -230,13 +230,13 @@ paths:
       security:
         - cookieAuth: []
       summary: Resource info
-      description: Getting information about a resource
+      description: Getting information about a resource. When passing an empty path, information about the root directory is returned.
       operationId: resourceInfo
       parameters:
         - name: path
           in: query
           description: Full path to the resource
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -260,13 +260,13 @@ paths:
       security:
         - cookieAuth: [ ]
       summary: Uploading resources
-      description: Allows you to upload files and folders
+      description: Allows you to upload files and folders. When passing an empty path, loads the resource into the root directory
       operationId: uploadResource
       parameters:
         - name: path
           in: query
           description: Full path to the resource
-          required: true
+          required: false
           schema:
             type: string
       requestBody:
@@ -327,13 +327,13 @@ paths:
       security:
         - cookieAuth: [ ]
       summary: Get information
-      description: Getting information about the contents of a folder
+      description: Getting information about the contents of a folder. Passing an empty path returns the contents of the root folder.
       operationId: getContentsInfo
       parameters:
         - name: path
           in: query
           description: Full path to the directory
-          required: true
+          required: false
           schema:
             type: string
       responses:
