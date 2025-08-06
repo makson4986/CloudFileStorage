@@ -38,8 +38,13 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${versions.springdoc}"
     runtimeOnly 'org.postgresql:postgresql'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.testcontainers:postgresql:${versions.testPostgres}"
+    testImplementation "org.testcontainers:minio:${versions.testMinio}"
+    testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation "org.springframework.boot:spring-boot-testcontainers"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

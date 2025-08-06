@@ -1,6 +1,8 @@
 ext {
     versions = [
             "springdoc": '2.8.8',
-            "minio": '8.5.17'
+            "minio": '8.5.17',
+            "testPostgres": '1.21.3',
+            "testMinio": '1.21.3'
     ]
 }

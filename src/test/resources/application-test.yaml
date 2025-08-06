@@ -1,0 +1,10 @@
+spring:
+  session:
+    timeout: 5m
+  data:
+    redis:
+      host: redis
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master-test.yaml
+minio:
+  bucket-name: user-files
