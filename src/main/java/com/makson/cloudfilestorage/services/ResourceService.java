@@ -85,10 +85,9 @@ public class ResourceService {
         return result;
     }
 
-    public List<ResourceResponseDto> search(String query) {
+    public List<ResourceResponseDto> search(User user, String query) {
         List<ResourceResponseDto> result = new ArrayList<>();
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String path = PathUtil.getFullPathWithIdentificationDirectory("", user);
         for (ResourceResponseDto resource : getContentsInfo(path, true)) {
             if (resource.name().toLowerCase().contains(query.toLowerCase())) {

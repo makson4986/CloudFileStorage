@@ -40,7 +40,11 @@ public class PathUtil {
     }
 
     public static String getFullPathWithIdentificationDirectory(String path, User user) {
-        return resolve(IDENTIFICATION_DIRECTORY.formatted((user.getId())), path);
+        return resolve(IDENTIFICATION_DIRECTORY.formatted(user.getId()), path);
+    }
+
+    public static String getFullPathWithIdentificationDirectory(String path, int userId) {
+        return resolve(IDENTIFICATION_DIRECTORY.formatted(userId), path);
     }
 
     public static String removeIdentificationDirectory(String path) {

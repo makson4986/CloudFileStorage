@@ -6,6 +6,8 @@ import com.makson.cloudfilestorage.models.User;
 import com.makson.cloudfilestorage.services.DirectoryService;
 import com.makson.cloudfilestorage.services.ResourceService;
 import com.makson.cloudfilestorage.utils.PathUtil;
+import com.makson.cloudfilestorage.validation.groups.PathNotBlankCheck;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,7 @@ public class DirectoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createEmptyDirectory(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> createEmptyDirectory(@Validated({Default.class, PathNotBlankCheck.class}) ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
         String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         ResourceResponseDto result = directoryService.createEmpty(path);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);

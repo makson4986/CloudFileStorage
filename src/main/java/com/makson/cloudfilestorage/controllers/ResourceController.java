@@ -7,10 +7,13 @@ import com.makson.cloudfilestorage.dto.ResourceResponseDto;
 import com.makson.cloudfilestorage.models.User;
 import com.makson.cloudfilestorage.services.ResourceService;
 import com.makson.cloudfilestorage.utils.PathUtil;
+import com.makson.cloudfilestorage.validation.groups.PathNotBlankCheck;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,7 +34,7 @@ public class ResourceController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<?> download(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> download(@Validated({Default.class, PathNotBlankCheck.class}) ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
         String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         String fileName = PathUtil.getName(resourceRequestDto.path()).replace("/", "");
         InputStreamResource resource = new InputStreamResource(resourceService.download(path));
@@ -47,8 +50,8 @@ public class ResourceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> search(@Validated QueryDto queryDto) {
-        return ResponseEntity.ok(resourceService.search(queryDto.query()));
+    public ResponseEntity<?> search(@Validated QueryDto queryDto, @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(resourceService.search(user, queryDto.query()));
     }
 
     @GetMapping("/move")
@@ -60,7 +63,7 @@ public class ResourceController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@Validated ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
+    public ResponseEntity<?> delete(@Validated({Default.class, PathNotBlankCheck.class}) ResourceRequestDto resourceRequestDto, @AuthenticationPrincipal User user) {
         String path = PathUtil.getFullPathWithIdentificationDirectory(resourceRequestDto.path(), user);
         resourceService.delete(path);
         return ResponseEntity.noContent().build();
