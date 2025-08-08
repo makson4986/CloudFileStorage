@@ -39,7 +39,7 @@ public class DirectoryService {
         }
 
         if (isDirectoryExists(path)) {
-            throw new ResourceAlreadyExistException("Directory '%s' already exists".formatted(name));
+            throw new ResourceAlreadyExistException("Resource '%s' already exists".formatted(name));
         }
 
         minioRepository.createEmptyDirectory(path);
@@ -144,7 +144,7 @@ public class DirectoryService {
     }
 
     private boolean isDirectoryExists(String path) {
-        return minioRepository.getFileInfo(path).isPresent();
+        return minioRepository.getFileInfo(path).isPresent() || minioRepository.getFileInfo(path.replaceAll("/$", "")).isPresent();
     }
 
     private void addResourceToZip(String resourceName, ZipOutputStream zip, InputStream resourceContents) {

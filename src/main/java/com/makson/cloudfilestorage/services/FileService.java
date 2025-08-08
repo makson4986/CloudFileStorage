@@ -45,7 +45,7 @@ public class FileService {
 
     public ResourceResponseDto upload(String path, MultipartFile file) {
         if (isFileExists(path)) {
-            throw new ResourceAlreadyExistException("File '%s' already exists".formatted(file.getOriginalFilename()));
+            throw new ResourceAlreadyExistException("Resource '%s' already exists".formatted(file.getOriginalFilename()));
         }
 
         minioRepository.uploadFile(path, file);
@@ -63,7 +63,7 @@ public class FileService {
         }
 
         if (isFileExists(to)) {
-            throw new ResourceAlreadyExistException("File '%s' already exists".formatted(PathUtil.getName(to)));
+            throw new ResourceAlreadyExistException("Resource '%s' already exists".formatted(PathUtil.getName(to)));
         }
 
         minioRepository.copy(from, to);
@@ -72,6 +72,6 @@ public class FileService {
     }
 
     public boolean isFileExists(String path) {
-        return minioRepository.getFileInfo(path).isPresent();
+        return minioRepository.getFileInfo(path).isPresent() || minioRepository.getFileInfo(path + "/").isPresent();
     }
 }
